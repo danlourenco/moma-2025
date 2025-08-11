@@ -1,4 +1,4 @@
-# MoMA 2025 - Museum Platform as a Service
+# MoMA (Museum of Munchkin Art) - Museum Platform as a Service
 
 > **AI-powered art gallery platform for families and creators**
 
