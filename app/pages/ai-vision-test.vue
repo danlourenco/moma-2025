@@ -71,18 +71,25 @@
       <div v-if="analysis || loading" class="bg-white rounded-lg shadow p-6">
         <h2 class="text-xl font-semibold mb-4">AI Vision Analysis</h2>
         
-        <div v-if="loading" class="text-gray-600">
-          <div class="animate-pulse flex items-center">
+        <div v-if="loading && !analysis" class="text-gray-600">
+          <div class="animate-pulse flex items-center mb-4">
             <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
-            Using Llama 3.2 11B Vision to analyze the artwork...
+            Analyzing artwork with Llama 3.2 11B Vision...
+          </div>
+        </div>
+
+        <div v-if="loading && analysis" class="mb-4">
+          <div class="flex items-center text-sm text-blue-600">
+            <div class="animate-pulse w-2 h-2 bg-blue-600 rounded-full mr-2"></div>
+            Streaming response...
           </div>
         </div>
         
         <div v-if="analysis" class="prose max-w-none">
-          <div class="bg-gray-50 p-6 rounded-md border-l-4 border-blue-500">
-            <div class="whitespace-pre-wrap">{{ analysis }}</div>
+          <div class="bg-gray-50 p-6 rounded-md border-l-4 border-blue-500 relative">
+            <div class="whitespace-pre-wrap">{{ analysis }}<span v-if="loading" class="animate-pulse text-blue-600">|</span></div>
           </div>
-          <div class="mt-4 text-sm text-gray-500">
+          <div v-if="!loading && (modelUsed || analysisTimestamp)" class="mt-4 text-sm text-gray-500">
             Model: {{ modelUsed }} | Generated: {{ analysisTimestamp }}
           </div>
         </div>
@@ -162,21 +169,68 @@ const analyzeArtwork = async () => {
     // Convert image to base64
     const base64Image = await fileToBase64(selectedFile.value)
     
-    const response = await $fetch('/api/ai/vision-analysis', {
+    // Use streaming fetch for real-time response
+    const response = await fetch('/api/ai/vision-analysis-stream', {
       method: 'POST',
-      body: {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         image: base64Image,
         analysisStyle: analysisStyle.value,
         artistAge: artistAge.value || undefined
-      }
+      })
     })
+
+    if (!response.ok) {
+      throw new Error('Failed to analyze artwork')
+    }
+
+    const reader = response.body?.getReader()
+    const decoder = new TextDecoder()
+
+    if (reader) {
+      try {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value, { stream: true })
+          const lines = chunk.split('\n')
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6))
+                
+                if (data.type === 'status') {
+                  // Could show status messages if needed
+                  console.log('Status:', data.message)
+                } else if (data.type === 'chunk') {
+                  // Append content as it streams in
+                  analysis.value += data.content
+                } else if (data.type === 'complete') {
+                  // Streaming complete
+                  modelUsed.value = data.model
+                  analysisTimestamp.value = new Date(data.timestamp).toLocaleString()
+                  loading.value = false
+                } else if (data.type === 'error') {
+                  throw new Error(data.message)
+                }
+              } catch (parseError) {
+                // Skip invalid JSON lines
+                console.warn('Failed to parse SSE data:', line)
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock()
+      }
+    }
     
-    analysis.value = response.analysis
-    modelUsed.value = response.model
-    analysisTimestamp.value = new Date(response.timestamp).toLocaleString()
   } catch (err) {
-    error.value = err.data?.message || err.message || 'Failed to analyze artwork'
-  } finally {
+    error.value = err.message || 'Failed to analyze artwork'
     loading.value = false
   }
 }
