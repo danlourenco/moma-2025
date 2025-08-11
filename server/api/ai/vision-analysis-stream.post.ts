@@ -56,7 +56,8 @@ export default defineEventHandler(async (event) => {
             userPrompt = `Please analyze this artwork${ageContext}.`
         }
 
-        // Use Cloudflare's Llama 3.2 11B Vision model with streaming
+        // Use Cloudflare's Llama 3.2 11B Vision model
+        // Note: streaming may not be supported, so we'll simulate it
         const response = await hubAI().run("@cf/meta/llama-3.2-11b-vision-instruct", {
           messages: [
             {
@@ -80,12 +81,14 @@ export default defineEventHandler(async (event) => {
             },
           ],
           max_tokens: 800,
-          temperature: 0.8,
-          stream: true, // Enable streaming
+          temperature: 0.8
         })
 
-        // Check if response is streamed
+        console.log('AI Response received:', response)
+
+        // Check if response has streaming data
         if (response.readable) {
+          console.log('Using native streaming...')
           const reader = response.getReader()
           const decoder = new TextDecoder()
 
@@ -120,21 +123,34 @@ export default defineEventHandler(async (event) => {
             reader.releaseLock()
           }
         } else {
-          // Fallback for non-streaming response
-          const content = response.response || "No response generated"
+          // Handle regular response
+          console.log('Using fallback chunking...')
+          const content = response.response || response || "AI model returned empty response"
           
-          // Simulate streaming by sending chunks
-          const words = content.split(' ')
-          for (let i = 0; i < words.length; i += 3) {
-            const chunk = words.slice(i, i + 3).join(' ') + ' '
+          console.log('Content to stream:', content)
+          
+          if (content && content !== "No response generated") {
+            // Simulate streaming by sending chunks
+            const words = content.split(' ')
+            for (let i = 0; i < words.length; i += 2) {
+              const chunk = words.slice(i, i + 2).join(' ') + ' '
+              controller.enqueue(
+                encoder.encode(`data: ${JSON.stringify({ 
+                  type: 'chunk', 
+                  content: chunk 
+                })}\n\n`)
+              )
+              // Small delay to simulate streaming
+              await new Promise(resolve => setTimeout(resolve, 50))
+            }
+          } else {
+            // Send error if no content
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify({ 
                 type: 'chunk', 
-                content: chunk 
+                content: 'The AI model did not generate a response. This might be due to content policy restrictions or an issue with the image. Please try a different image or analysis style.' 
               })}\n\n`)
             )
-            // Small delay to simulate streaming
-            await new Promise(resolve => setTimeout(resolve, 100))
           }
         }
 
