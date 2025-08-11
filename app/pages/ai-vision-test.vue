@@ -3,26 +3,6 @@
     <div class="max-w-4xl mx-auto px-4">
       <h1 class="text-3xl font-bold text-gray-900 mb-8">AI Vision Art Analysis Test</h1>
       
-      <!-- License Agreement Section -->
-      <div v-if="!licenseAgreed" class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-8">
-        <h2 class="text-xl font-semibold text-yellow-800 mb-4">Model License Agreement Required</h2>
-        <div class="text-sm text-yellow-700 mb-4">
-          <p>Before using the Llama 3.2 11B Vision model, you must agree to:</p>
-          <ul class="list-disc ml-6 mt-2 space-y-1">
-            <li><a href="https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/LICENSE" target="_blank" class="underline">Llama 3.2 Community License</a></li>
-            <li><a href="https://github.com/meta-llama/llama-models/blob/main/models/llama3_2/USE_POLICY.md" target="_blank" class="underline">Acceptable Use Policy</a></li>
-          </ul>
-          <p class="mt-3 text-xs">You represent that you are not domiciled in, or a company with principal place of business in, the European Union.</p>
-        </div>
-        <button 
-          @click="agreeLicense"
-          :disabled="agreeing"
-          class="bg-yellow-600 text-white px-6 py-3 rounded-md hover:bg-yellow-700 disabled:opacity-50"
-        >
-          {{ agreeing ? 'Agreeing...' : 'I Agree to License Terms' }}
-        </button>
-      </div>
-      
       <!-- Image Upload Section -->
       <div class="bg-white rounded-lg shadow p-6 mb-8">
         <h2 class="text-xl font-semibold mb-4">Upload Artwork Image</h2>
@@ -146,11 +126,6 @@
 </template>
 
 <script setup>
-// License agreement
-const licenseAgreed = ref(false)
-const agreeing = ref(false)
-
-// Main functionality
 const fileInput = ref(null)
 const selectedFile = ref(null)
 const imagePreview = ref('')
@@ -161,20 +136,6 @@ const loading = ref(false)
 const error = ref('')
 const modelUsed = ref('')
 const analysisTimestamp = ref('')
-
-const agreeLicense = async () => {
-  agreeing.value = true
-  try {
-    await $fetch('/api/ai/agree-license', {
-      method: 'POST'
-    })
-    licenseAgreed.value = true
-  } catch (err) {
-    error.value = 'Failed to agree to license: ' + (err.data?.message || err.message)
-  } finally {
-    agreeing.value = false
-  }
-}
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
