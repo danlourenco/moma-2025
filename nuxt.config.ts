@@ -9,6 +9,13 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/test-utils',
-    '@nuxt/eslint'
-  ]
+    '@nuxt/eslint',
+    '@nuxthub/core'
+  ],
+
+  hub: {
+    database: true,
+    blob: true,
+    ai: true
+  }
 })
