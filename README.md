@@ -1,5 +1,7 @@
 # MoMA (Museum of Munchkin Art) - Museum Platform as a Service
 
+![MoMA 2025 - Where children's art meets museum sophistication](public/moma-hero.png)
+
 > **AI-powered art gallery platform for families and creators**
 
 Transform your family's artwork into a sophisticated digital museum with AI-generated critiques and social discovery features.
