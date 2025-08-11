@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     "@nuxt/test-utils",
     "@nuxt/eslint",
     "@nuxthub/core",
+    "@nuxtjs/tailwindcss",
   ],
 
   hub: {
