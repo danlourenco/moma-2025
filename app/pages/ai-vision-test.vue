@@ -89,6 +89,49 @@
           <div class="bg-gray-50 p-6 rounded-md border-l-4 border-blue-500 relative">
             <div class="whitespace-pre-wrap">{{ analysis }}<span v-if="loading" class="animate-pulse text-blue-600">|</span></div>
           </div>
+          
+          <!-- Audio Generation Section -->
+          <div v-if="analysis && !loading" class="mt-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+            <h3 class="text-lg font-semibold text-purple-800 mb-3">🎧 Audio Narration</h3>
+            
+            <div v-if="!audioGenerated && !generatingAudio" class="space-y-3">
+              <p class="text-sm text-purple-700">Generate an AI voice narration of this art critique:</p>
+              <button 
+                @click="generateAudio"
+                class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                Generate Audio Narration
+              </button>
+            </div>
+
+            <div v-if="generatingAudio" class="flex items-center text-purple-600">
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600 mr-2"></div>
+              Generating audio with ElevenLabs...
+            </div>
+
+            <div v-if="audioGenerated && audioUrl" class="space-y-3">
+              <p class="text-sm text-green-700">✅ Audio generated successfully!</p>
+              <audio 
+                controls 
+                class="w-full"
+                preload="none"
+              >
+                <source :src="audioUrl" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+              <div class="text-xs text-gray-500">
+                Audio ID: {{ audioInfo.audioId }} | Size: {{ formatBytes(audioInfo.size) }} | Voice: {{ audioInfo.voiceId }}
+              </div>
+            </div>
+
+            <div v-if="audioError" class="text-red-600 text-sm">
+              ❌ Error: {{ audioError }}
+            </div>
+          </div>
+          
           <div v-if="!loading && (modelUsed || analysisTimestamp)" class="mt-4 text-sm text-gray-500">
             Model: {{ modelUsed }} | Generated: {{ analysisTimestamp }}
           </div>
@@ -143,6 +186,13 @@ const loading = ref(false)
 const error = ref('')
 const modelUsed = ref('')
 const analysisTimestamp = ref('')
+
+// Audio generation state
+const generatingAudio = ref(false)
+const audioGenerated = ref(false)
+const audioUrl = ref('')
+const audioInfo = ref(null)
+const audioError = ref('')
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
@@ -246,6 +296,42 @@ const fileToBase64 = (file) => {
     }
     reader.onerror = error => reject(error)
   })
+}
+
+const generateAudio = async () => {
+  if (!analysis.value) return
+  
+  generatingAudio.value = true
+  audioError.value = ''
+  
+  try {
+    const response = await $fetch('/api/ai/generate-audio', {
+      method: 'POST',
+      body: {
+        text: analysis.value,
+        voiceId: 'ClCJCctiyh2dhHQ3SBL6' // Your specified voice ID
+      }
+    })
+    
+    if (response.success) {
+      audioInfo.value = response
+      // Create blob URL for the audio
+      audioUrl.value = `/api/_hub/blob/${response.filename}`
+      audioGenerated.value = true
+    }
+  } catch (err) {
+    audioError.value = err.data?.message || err.message || 'Failed to generate audio'
+  } finally {
+    generatingAudio.value = false
+  }
+}
+
+const formatBytes = (bytes) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
 // SEO
