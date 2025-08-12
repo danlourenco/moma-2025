@@ -22,7 +22,7 @@ Transform your family's artwork into a sophisticated digital museum with AI-gene
 ## 🏗️ Tech Stack
 
 - **Framework**: [Nuxt 4.x](https://nuxt.com/) with TypeScript
-- **Platform**: [NuxtHub](https://hub.nuxt.com/) on Cloudflare Pages
+- **Platform**: [NuxtHub](https://hub.nuxt.com/) on Cloudflare Workers
 - **Database**: Cloudflare D1 (SQLite)
 - **Storage**: Cloudflare R2 (S3-compatible)
 - **AI**: Cloudflare Workers AI
@@ -34,7 +34,7 @@ Transform your family's artwork into a sophisticated digital museum with AI-gene
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 22+ (LTS recommended)
 - npm/pnpm/yarn
 - Git
 
