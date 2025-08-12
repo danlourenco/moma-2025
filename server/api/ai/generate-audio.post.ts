@@ -10,7 +10,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY
+  // Get API key from runtime config
+  const config = useRuntimeConfig()
+  const elevenLabsApiKey = config.elevenLabsApiKey
+  
   if (!elevenLabsApiKey) {
     throw createError({
       statusCode: 500,

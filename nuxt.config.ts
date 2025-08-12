@@ -27,4 +27,13 @@ export default defineNuxtConfig({
     ai: true,
     workers: true,
   },
+
+  runtimeConfig: {
+    // Server-side only (private)
+    elevenLabsApiKey: process.env.ELEVEN_LABS_API_KEY,
+    
+    public: {
+      // Client-side accessible
+    }
+  },
 });
