@@ -142,32 +142,35 @@
         </div>
       </div>
 
-      <!-- Example Images Section -->
+      <!-- Usage Instructions -->
       <div class="mt-8">
-        <h2 class="text-xl font-semibold mb-4">Test with Example Images</h2>
-        <div class="text-sm text-gray-600 mb-4">
-          Upload your own artwork images, or use these examples to test the AI vision capabilities.
-        </div>
-        <div class="grid gap-4 md:grid-cols-3">
-          <div class="text-center p-4 bg-white rounded-lg shadow">
-            <div class="w-full h-32 bg-gradient-to-br from-yellow-200 via-red-200 to-blue-200 rounded-lg mb-2 flex items-center justify-center">
-              <span class="text-xs text-gray-600">Upload your artwork</span>
+        <h2 class="text-xl font-semibold mb-4">How to Use</h2>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <div class="space-y-4 text-sm text-blue-800">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+              <div>
+                <strong>Upload Artwork:</strong> Click "Select artwork image" and choose a photo of any artwork - child drawings, paintings, sketches, etc.
+              </div>
             </div>
-            <div class="text-sm font-medium">Child's Drawing</div>
-          </div>
-          
-          <div class="text-center p-4 bg-white rounded-lg shadow">
-            <div class="w-full h-32 bg-gradient-to-br from-purple-200 via-pink-200 to-orange-200 rounded-lg mb-2 flex items-center justify-center">
-              <span class="text-xs text-gray-600">Upload your artwork</span>
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+              <div>
+                <strong>Choose Analysis Style:</strong> Select from humorous (pretentious art critic), sophisticated, museum docent, or academic analysis.
+              </div>
             </div>
-            <div class="text-sm font-medium">Abstract Art</div>
-          </div>
-
-          <div class="text-center p-4 bg-white rounded-lg shadow">
-            <div class="w-full h-32 bg-gradient-to-br from-green-200 via-blue-200 to-indigo-200 rounded-lg mb-2 flex items-center justify-center">
-              <span class="text-xs text-gray-600">Upload your artwork</span>
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+              <div>
+                <strong>Set Artist Age:</strong> Optional - helps the AI tailor its response appropriately.
+              </div>
             </div>
-            <div class="text-sm font-medium">Nature Scene</div>
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+              <div>
+                <strong>Generate & Listen:</strong> Watch the AI analysis stream in real-time, then generate audio narration!
+              </div>
+            </div>
           </div>
         </div>
       </div>
