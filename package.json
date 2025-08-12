@@ -1,13 +1,20 @@
 {
-  "name": "nuxt-app",
+  "name": "moma-2025",
+  "version": "0.1.0",
   "type": "module",
   "private": true,
+  "description": "Museum Platform as a Service - Multi-user AI-powered art gallery platform",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "changelog": "changelogen",
+    "version:patch": "changelogen --bump patch",
+    "version:minor": "changelogen --bump minor",
+    "version:major": "changelogen --bump major",
+    "release": "changelogen --release"
   },
   "dependencies": {
     "@elevenlabs/elevenlabs-js": "^2.9.0",
@@ -27,6 +34,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "changelogen": "^0.6.2",
     "wrangler": "^4.28.1"
   }
 }
